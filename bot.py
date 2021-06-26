@@ -180,24 +180,25 @@ async def on_shutdown(dp):
 
 
 if __name__ == '__main__':
+    # WEBHOOK_HOST = environ.get("WEBHOOK_HOST_ADDR")
+    # WEBHOOK_PATH = f"webhook/{API_TOKEN}/"
+    # WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
+    # WEBAPP_HOST = environ.get("WEBAPP_HOST")
+    # WEBAPP_PORT = environ.get("PORT")
+    WEBHOOK_HOST = "https://serene-beach-54092.herokuapp.com/"
+    WEBHOOK_PATH = f"webhook/{API_TOKEN}/"
+    WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
+    WEBAPP_HOST = '0.0.0.0'
+    WEBAPP_PORT = 5000
 
-    webhook_settings = False if environ.get('LOCAL_DEBUG') else True
+    start_webhook(
+        dispatcher=dp,
+        webhook_path=f"/{WEBHOOK_PATH}",
+        on_startup=on_startup,
+        on_shutdown=on_shutdown,
+        skip_updates=True,
+        host=WEBAPP_HOST,
+        port=WEBAPP_PORT,
+    )
 
-    if webhook_settings:
-        WEBHOOK_HOST = environ.get("WEBHOOK_HOST_ADDR")
-        WEBHOOK_PATH = f"webhook/{API_TOKEN}/"
-        WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
-        WEBAPP_HOST = environ.get("WEBAPP_HOST")
-        WEBAPP_PORT = environ.get("PORT")
-
-        start_webhook(
-            dispatcher=dp,
-            webhook_path=f"/{WEBHOOK_PATH}",
-            on_startup=on_startup,
-            on_shutdown=on_shutdown,
-            skip_updates=False,
-            host=WEBAPP_HOST,
-            port=WEBAPP_PORT,
-        )
-    else:
-        executor.start_polling(dp, skip_updates=True)
+    # executor.start_polling(dp, skip_updates=True)
