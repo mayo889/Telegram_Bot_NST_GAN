@@ -6,6 +6,8 @@ import glob
 import image_processing
 import threading
 import asyncio
+from os import environ
+from aiogram.utils.executor import start_webhook
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -164,5 +166,38 @@ async def echo(message: types.Message):
     await message.answer(kb.menu_message, reply_markup=kb.start_keyboard())
 
 
+async def on_startup(dp):
+    await bot.set_webhook(WEBHOOK_URL)
+    logging.info(f"Start webhook..\tWEBAPP_HOST-{WEBAPP_HOST}; WEBAPP_PORT-{WEBAPP_PORT};\n"
+                 f"WEBAPP_URL-{WEBHOOK_URL};")
+
+
+async def on_shutdown(dp):
+    logging.warning("Shutting down..")
+    await dp.storage.close()
+    await dp.storage.wait_closed()
+    logging.warning("Bye!")
+
+
 if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+
+    webhook_settings = False if environ.get('LOCAL_DEBUG') else True
+
+    if webhook_settings:
+        WEBHOOK_HOST = environ.get("WEBHOOK_HOST_ADDR")
+        WEBHOOK_PATH = f"webhook/{API_TOKEN}/"
+        WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
+        WEBAPP_HOST = environ.get("WEBAPP_HOST")
+        WEBAPP_PORT = environ.get("PORT")
+
+        start_webhook(
+            dispatcher=dp,
+            webhook_path=f"/{WEBHOOK_PATH}",
+            on_startup=on_startup,
+            on_shutdown=on_shutdown,
+            skip_updates=False,
+            host=WEBAPP_HOST,
+            port=WEBAPP_PORT,
+        )
+    else:
+        executor.start_polling(dp, skip_updates=True)
