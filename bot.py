@@ -7,6 +7,7 @@ import image_processing
 import threading
 import asyncio
 from os import environ
+import os
 from aiogram.utils.executor import start_webhook
 import warnings
 warnings.filterwarnings("ignore")
@@ -185,12 +186,11 @@ if __name__ == '__main__':
     # WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
     # WEBAPP_HOST = environ.get("WEBAPP_HOST")
     # WEBAPP_PORT = environ.get("PORT")
-    API_TOKEN = "f352b3b4-1830-4e4e-845e-f2e1197ab48e"
     WEBHOOK_HOST = "https://serene-beach-54092.herokuapp.com"
-    WEBHOOK_PATH = f"/webhook/{API_TOKEN}"
+    WEBHOOK_PATH = f"/webhook/{BOT_API_TOKEN}"
     WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
     WEBAPP_HOST = '0.0.0.0'
-    WEBAPP_PORT = 5000
+    WEBAPP_PORT = int(os.environ.get('PORT', 5000))
 
     start_webhook(
         dispatcher=dp,
