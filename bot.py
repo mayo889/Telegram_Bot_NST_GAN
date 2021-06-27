@@ -1,23 +1,24 @@
 import logging
 from aiogram import Bot, Dispatcher, executor, types
-from config import BOT_API_TOKEN
+# from config import BOT_API_TOKEN
 import keyboards as kb
 import glob
 import image_processing
 import threading
 import asyncio
 from os import environ
-import os
 from aiogram.utils.executor import start_webhook
 import warnings
 warnings.filterwarnings("ignore")
+
+BOT_TOKEN = environ.get("BOT_TOKEN")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
 # Initialize bot and dispatcher
 # bot = Bot(token=API_TOKEN, proxy=PROXY_URL, proxy_auth=PROXY_AUTH)
-bot = Bot(token=BOT_API_TOKEN)
+bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher(bot)
 db_photos = {}
 
@@ -181,16 +182,17 @@ async def on_shutdown(dp):
 
 
 if __name__ == '__main__':
-    # WEBHOOK_HOST = environ.get("WEBHOOK_HOST_ADDR")
-    # WEBHOOK_PATH = f"webhook/{API_TOKEN}/"
-    # WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
-    # WEBAPP_HOST = environ.get("WEBAPP_HOST")
-    # WEBAPP_PORT = environ.get("PORT")
-    WEBHOOK_HOST = "https://serene-beach-54092.herokuapp.com"
-    WEBHOOK_PATH = f"/webhook/{BOT_API_TOKEN}"
+    WEBHOOK_HOST = environ.get("WEBHOOK_HOST")
+    WEBHOOK_PATH = f"/webhook/{BOT_TOKEN}"
     WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
-    WEBAPP_HOST = '0.0.0.0'
-    WEBAPP_PORT = int(os.environ.get('PORT', 5000))
+    WEBAPP_HOST = environ.get("WEBAPP_HOST")
+    WEBAPP_PORT = int(environ.get("PORT"))
+
+    # WEBHOOK_HOST = "https://serene-beach-54092.herokuapp.com"
+    # WEBHOOK_PATH = f"/webhook/{BOT_API_TOKEN}"
+    # WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
+    # WEBAPP_HOST = '0.0.0.0'
+    # WEBAPP_PORT = int(os.environ.get('PORT', 5000))
 
     start_webhook(
         dispatcher=dp,
