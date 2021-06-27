@@ -1,6 +1,6 @@
 import logging
 from aiogram import Bot, Dispatcher, executor, types
-from config import API_TOKEN
+from config import BOT_API_TOKEN
 import keyboards as kb
 import glob
 import image_processing
@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO)
 
 # Initialize bot and dispatcher
 # bot = Bot(token=API_TOKEN, proxy=PROXY_URL, proxy_auth=PROXY_AUTH)
-bot = Bot(token=API_TOKEN)
+bot = Bot(token=BOT_API_TOKEN)
 dp = Dispatcher(bot)
 db_photos = {}
 
@@ -185,15 +185,16 @@ if __name__ == '__main__':
     # WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
     # WEBAPP_HOST = environ.get("WEBAPP_HOST")
     # WEBAPP_PORT = environ.get("PORT")
-    WEBHOOK_HOST = "https://serene-beach-54092.herokuapp.com/"
-    WEBHOOK_PATH = f"webhook/{API_TOKEN}/"
+    API_TOKEN = "f352b3b4-1830-4e4e-845e-f2e1197ab48e"
+    WEBHOOK_HOST = "https://serene-beach-54092.herokuapp.com"
+    WEBHOOK_PATH = f"/webhook/{API_TOKEN}"
     WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
     WEBAPP_HOST = '0.0.0.0'
     WEBAPP_PORT = 5000
 
     start_webhook(
         dispatcher=dp,
-        webhook_path=f"/{WEBHOOK_PATH}",
+        webhook_path=WEBHOOK_PATH,
         on_startup=on_startup,
         on_shutdown=on_shutdown,
         skip_updates=True,
