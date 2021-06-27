@@ -124,7 +124,9 @@ async def transfer_style(call: types.CallbackQuery):
 
 @dp.message_handler(content_types=['photo'])
 async def handle_docs_photo(message: types.Message):
-    image = message.photo[-2]
+    # for photo in message.photo:
+    #     print(vars(photo))
+    image = message.photo[-3]
     file_info = await bot.get_file(image.file_id)
     photo = await bot.download_file(file_info.file_path)
 
@@ -200,4 +202,4 @@ if __name__ == '__main__':
         port=WEBAPP_PORT,
     )
 
-    # executor.start_polling(dp, skip_updates=True)
+    executor.start_polling(dp, skip_updates=True)
