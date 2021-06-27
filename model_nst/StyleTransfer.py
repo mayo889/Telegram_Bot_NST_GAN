@@ -95,7 +95,6 @@ class StyleTransfer:
         self.style_layers = ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5']
 
     def get_style_model_and_losses(self, style_img, content_img):
-        print('Начало создания')
         cnn = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=3, padding=1),
             nn.ReLU(),
@@ -111,7 +110,6 @@ class StyleTransfer:
         )
         cnn.load_state_dict(torch.load("models_wts/vgg_features_cpu.pth"))
         cnn = cnn.to(self.device).eval()
-        print('Загружены vgg layers')
 
         # normalization module
         normalization = Normalization(self.device).to(self.device)
@@ -145,8 +143,6 @@ class StyleTransfer:
                 model.add_module("style_loss_{}".format(i), style_loss)
                 style_losses.append(style_loss)
 
-        print('Добавлены style и content layers')
-
         return model, style_losses, content_losses
 
     @staticmethod
@@ -156,13 +152,11 @@ class StyleTransfer:
 
     def transfer(self, style_img, content_img):
         input_img = content_img.clone()
-        print('Перед созданием модели')
         model, style_losses, content_losses = self.get_style_model_and_losses(
             style_img, content_img)
         optimizer = self.get_input_optimizer(input_img)
 
         run = [0]
-        print('Перед запуском цикла')
         while run[0] <= self.num_steps:
 
             def closure():
@@ -205,8 +199,8 @@ class StyleTransfer:
 def run_nst(style_image, content_image):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    style_processing = ImageProcessing(new_size=128, device=device)
-    content_processing = ImageProcessing(new_size=128, device=device)
+    style_processing = ImageProcessing(new_size=256, device=device)
+    content_processing = ImageProcessing(new_size=256, device=device)
 
     style_image = style_processing.image_loader(style_image)
     content_image = content_processing.image_loader(content_image)

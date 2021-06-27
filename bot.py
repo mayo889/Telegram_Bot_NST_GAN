@@ -31,12 +31,10 @@ style_images = sorted([file for file in glob.glob('images/styles/*.jpg')])
 class User:
     def __init__(self, user_id):
         self.id = user_id
-        # self.content_img = 0
         self.style_img = 0
         self.type_algo = None
 
     def restart(self, algo=None):
-        # self.content_img = 0
         self.style_img = 0
         self.type_algo = algo
 
@@ -126,7 +124,7 @@ async def transfer_style(call: types.CallbackQuery):
 
 @dp.message_handler(content_types=['photo'])
 async def handle_docs_photo(message: types.Message):
-    image = message.photo[-1]
+    image = message.photo[-2]
     file_info = await bot.get_file(image.file_id)
     photo = await bot.download_file(file_info.file_path)
 
@@ -152,7 +150,6 @@ async def handle_docs_photo(message: types.Message):
             user.style_img = photo
             await message.answer("Теперь отправь фотографию, на которую перенести стиль")
         else:
-            # user.content_img = photo
             await message.answer("Процесс тяжелый. Дай мне 5 минут и я отправлю результат")
 
             threading.Thread(
@@ -171,8 +168,6 @@ async def echo(message: types.Message):
 
 async def on_startup(dp):
     await bot.set_webhook(WEBHOOK_URL)
-    # logging.info(f"Start webhook..\tWEBAPP_HOST-{WEBAPP_HOST}; WEBAPP_PORT-{WEBAPP_PORT};\n"
-    #              f"WEBAPP_URL-{WEBHOOK_URL};")
 
 
 async def on_shutdown(dp):

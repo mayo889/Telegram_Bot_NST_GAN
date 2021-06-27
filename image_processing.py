@@ -10,6 +10,7 @@ warnings.filterwarnings("ignore")
 BOT_TOKEN = environ.get("BOT_TOKEN")
 # BOT_TOKEN = BOT_API_TOKEN
 
+
 async def cycle_gan(message, image, type_algo):
     if type_algo == 'summer2winter':
         wts_path = "models_wts/summer2winter.pth"
