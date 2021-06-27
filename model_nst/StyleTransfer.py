@@ -16,21 +16,20 @@ class ImageProcessing:
         self.device = device
         self.image_size = None
 
-        self.loader = transforms.ToTensor()
-        self.unloader = transforms.ToPILImage()
-
     def image_loader(self, image_name):
         image = Image.open(image_name)
         self.image_size = image.size
         image = PIL.ImageOps.pad(image, (self.new_size, self.new_size))
-        image = self.loader(image).unsqueeze(0)
+        loader = transforms.ToTensor()
+        image = loader(image).unsqueeze(0)
 
         return image.to(self.device, torch.float)
 
     def get_image(self, tensor):
         image = tensor.cpu().clone()
         image = image.squeeze(0)
-        image = self.unloader(image)
+        unloader = transforms.ToPILImage()
+        image = unloader(image)
         image = PIL.ImageOps.fit(image, (self.image_size[0], self.image_size[1]))
 
         # transform PIL image to send to telegram
@@ -86,7 +85,7 @@ class Normalization(nn.Module):
 
 
 class StyleTransfer:
-    def __init__(self, num_steps, device, style_weight=100000, content_weight=1):
+    def __init__(self, num_steps, device, style_weight=10000, content_weight=1):
         self.num_steps = num_steps
         self.style_weight = style_weight
         self.content_weight = content_weight
@@ -96,6 +95,7 @@ class StyleTransfer:
         self.style_layers = ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5']
 
     def get_style_model_and_losses(self, style_img, content_img):
+        print('Начало создания')
         cnn = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=3, padding=1),
             nn.ReLU(),
@@ -111,6 +111,7 @@ class StyleTransfer:
         )
         cnn.load_state_dict(torch.load("models_wts/vgg_features_cpu.pth"))
         cnn = cnn.to(self.device).eval()
+        print('Загружены vgg layers')
 
         # normalization module
         normalization = Normalization(self.device).to(self.device)
@@ -144,6 +145,8 @@ class StyleTransfer:
                 model.add_module("style_loss_{}".format(i), style_loss)
                 style_losses.append(style_loss)
 
+        print('Добавлены style и content layers')
+
         return model, style_losses, content_losses
 
     @staticmethod
@@ -153,11 +156,13 @@ class StyleTransfer:
 
     def transfer(self, style_img, content_img):
         input_img = content_img.clone()
+        print('Перед созданием модели')
         model, style_losses, content_losses = self.get_style_model_and_losses(
             style_img, content_img)
         optimizer = self.get_input_optimizer(input_img)
 
         run = [0]
+        print('Перед запуском цикла')
         while run[0] <= self.num_steps:
 
             def closure():
@@ -184,6 +189,9 @@ class StyleTransfer:
 
                 run[0] += 1
 
+                if run[0] % 50 == 0:
+                    print("run {}:".format(run[0]))
+
                 return style_score + content_score
 
             optimizer.step(closure)
@@ -200,11 +208,11 @@ def run_nst(style_image, content_image):
     style_processing = ImageProcessing(new_size=256, device=device)
     content_processing = ImageProcessing(new_size=256, device=device)
 
-    style_img = style_processing.image_loader(style_image)
-    content_img = content_processing.image_loader(content_image)
+    style_image = style_processing.image_loader(style_image)
+    content_image = content_processing.image_loader(content_image)
 
-    transfer = StyleTransfer(num_steps=400, device=device)
-    output = transfer.transfer(style_img, content_img)
+    transfer = StyleTransfer(num_steps=300, device=device)
+    output = transfer.transfer(style_image, content_image)
     output = content_processing.get_image(output)
 
     return output
