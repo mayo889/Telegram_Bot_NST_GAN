@@ -60,7 +60,7 @@ class StyleLoss(nn.Module):
 
     @staticmethod
     def gram_matrix(input):
-        batch_size, h, w, f_map_num = input.size()  # batch size(=1)
+        batch_size, h, w, f_map_num = input.size()
         features = input.view(batch_size * h, w * f_map_num)  # resise F_XL into \hat F_XL
         G = torch.mm(features, features.t())  # compute the gram product
         # we 'normalize' the values of the gram matrix
@@ -80,12 +80,11 @@ class Normalization(nn.Module):
         self.std = torch.tensor([0.229, 0.224, 0.225]).view(-1, 1, 1).to(device)
 
     def forward(self, img):
-        # normalize img
         return (img - self.mean) / self.std
 
 
 class StyleTransfer:
-    def __init__(self, num_steps, device, style_weight=10000, content_weight=1):
+    def __init__(self, num_steps, device, style_weight=100000, content_weight=1):
         self.num_steps = num_steps
         self.style_weight = style_weight
         self.content_weight = content_weight
@@ -111,7 +110,6 @@ class StyleTransfer:
         cnn.load_state_dict(torch.load("models_wts/vgg_features_cpu.pth"))
         cnn = cnn.to(self.device).eval()
 
-        # normalization module
         normalization = Normalization(self.device).to(self.device)
 
         content_losses = []
@@ -119,7 +117,7 @@ class StyleTransfer:
 
         model = nn.Sequential(normalization)
 
-        i = 0  # increment every time we see a conv
+        i = 0
         for layer in cnn.children():
             if isinstance(layer, nn.Conv2d):
                 i += 1
@@ -174,7 +172,6 @@ class StyleTransfer:
                 for cl in content_losses:
                     content_score += cl.loss
 
-                # взвешивание ощибки
                 style_score *= self.style_weight
                 content_score *= self.content_weight
 
@@ -187,7 +184,6 @@ class StyleTransfer:
 
             optimizer.step(closure)
 
-        # a last correction...
         input_img.data.clamp_(0, 1)
 
         return input_img
@@ -196,8 +192,8 @@ class StyleTransfer:
 def run_nst(style_image, content_image):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    style_processing = ImageProcessing(new_size=150, device=device)
-    content_processing = ImageProcessing(new_size=150, device=device)
+    style_processing = ImageProcessing(new_size=180, device=device)
+    content_processing = ImageProcessing(new_size=180, device=device)
 
     style_image = style_processing.image_loader(style_image)
     content_image = content_processing.image_loader(content_image)

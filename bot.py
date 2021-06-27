@@ -40,6 +40,7 @@ class User:
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
     db_photos[message.from_user.id] = User(message.from_user.id)
+    logging.info(f"******New User! Current number of users in dict: {len(db_photos)}******")
     await message.answer(kb.start_message, reply_markup=kb.start_keyboard())
 
 
