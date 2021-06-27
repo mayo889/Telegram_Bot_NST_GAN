@@ -1,6 +1,5 @@
 import logging
 from aiogram import Bot, Dispatcher, executor, types
-# from config import BOT_API_TOKEN
 import keyboards as kb
 import glob
 import image_processing
@@ -12,7 +11,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 BOT_TOKEN = environ.get("BOT_TOKEN")
-# BOT_TOKEN = BOT_API_TOKEN
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -124,9 +122,7 @@ async def transfer_style(call: types.CallbackQuery):
 
 @dp.message_handler(content_types=['photo'])
 async def handle_docs_photo(message: types.Message):
-    # for photo in message.photo:
-    #     print(vars(photo))
-    image = message.photo[-3]
+    image = message.photo[-1]
     file_info = await bot.get_file(image.file_id)
     photo = await bot.download_file(file_info.file_path)
 
@@ -186,12 +182,6 @@ if __name__ == '__main__':
     WEBAPP_HOST = environ.get("WEBAPP_HOST")
     WEBAPP_PORT = int(environ.get("PORT"))
 
-    # WEBHOOK_HOST = "https://serene-beach-54092.herokuapp.com"
-    # WEBHOOK_PATH = f"/webhook/{BOT_API_TOKEN}"
-    # WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
-    # WEBAPP_HOST = '0.0.0.0'
-    # WEBAPP_PORT = int(os.environ.get('PORT', 5000))
-
     start_webhook(
         dispatcher=dp,
         webhook_path=WEBHOOK_PATH,
@@ -202,4 +192,4 @@ if __name__ == '__main__':
         port=WEBAPP_PORT,
     )
 
-    executor.start_polling(dp, skip_updates=True)
+    # executor.start_polling(dp, skip_updates=True)

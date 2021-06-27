@@ -2,13 +2,11 @@ from model_cyclegan import CycleGAN
 from model_nst import StyleTransfer
 from aiogram import Bot
 from os import environ
-# from config import BOT_API_TOKEN
 import keyboards as kb
 import warnings
 warnings.filterwarnings("ignore")
 
 BOT_TOKEN = environ.get("BOT_TOKEN")
-# BOT_TOKEN = BOT_API_TOKEN
 
 
 async def cycle_gan(message, image, type_algo):
