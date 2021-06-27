@@ -98,12 +98,16 @@ class StyleTransfer:
         self.content_layers = ['conv_4']
         self.style_layers = ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5']
 
-        self.cnn = models.vgg16(pretrained=False).features[:11]
-        self.cnn.load_state_dict(torch.load("models_wts/vgg_features_cpu.pth"))
-        self.cnn = self.cnn.to(self.device).eval()
+        # self.cnn = models.vgg16(pretrained=False).features[:11]
+        # self.cnn.load_state_dict(torch.load("models_wts/vgg_features_cpu.pth"))
+        # self.cnn = self.cnn.to(self.device).eval()
 
     def get_style_model_and_losses(self, style_img, content_img):
-        cnn = copy.deepcopy(self.cnn)
+        # cnn = copy.deepcopy(self.cnn)
+
+        cnn = models.vgg16(pretrained=False).features[:11]
+        cnn.load_state_dict(torch.load("models_wts/vgg_features_cpu.pth"))
+        cnn = cnn.to(self.device).eval()
 
         # normalization module
         normalization = Normalization(self.device).to(self.device)
