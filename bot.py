@@ -31,12 +31,12 @@ style_images = sorted([file for file in glob.glob('images/styles/*.jpg')])
 class User:
     def __init__(self, user_id):
         self.id = user_id
-        self.content_img = 0
+        # self.content_img = 0
         self.style_img = 0
         self.type_algo = None
 
     def restart(self, algo=None):
-        self.content_img = 0
+        # self.content_img = 0
         self.style_img = 0
         self.type_algo = algo
 
@@ -152,13 +152,13 @@ async def handle_docs_photo(message: types.Message):
             user.style_img = photo
             await message.answer("Теперь отправь фотографию, на которую перенести стиль")
         else:
-            user.content_img = photo
+            # user.content_img = photo
             await message.answer("Процесс тяжелый. Дай мне 5 минут и я отправлю результат")
 
             threading.Thread(
                 target=lambda mess, style_img, content_img:
                 asyncio.run(image_processing.style_transfer(mess, style_img, content_img)),
-                args=(message, user.style_img, user.content_img)).start()
+                args=(message, user.style_img, photo)).start()
     else:
         await message.answer("Прежде чем отправлять мне фотографии скажи мне какой алгоритм использовать",
                              reply_markup=kb.algo_keyboard())
