@@ -7,9 +7,6 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 import torchvision.transforms as transforms
-import torchvision.models as models
-
-import copy
 from io import BytesIO
 
 
@@ -98,27 +95,29 @@ class StyleTransfer:
         self.content_layers = ['conv_4']
         self.style_layers = ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5']
 
-        # self.cnn = models.vgg16(pretrained=False).features[:11]
-        # self.cnn.load_state_dict(torch.load("models_wts/vgg_features_cpu.pth"))
-        # self.cnn = self.cnn.to(self.device).eval()
-
     def get_style_model_and_losses(self, style_img, content_img):
-        # cnn = copy.deepcopy(self.cnn)
-
-        cnn = models.vgg16(pretrained=False).features[:11]
+        cnn = nn.Sequential(
+            nn.Conv2d(3, 64, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(64, 64, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.Conv2d(64, 128, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(128, 128, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.Conv2d(128, 256, kernel_size=3, padding=1)
+        )
         cnn.load_state_dict(torch.load("models_wts/vgg_features_cpu.pth"))
         cnn = cnn.to(self.device).eval()
 
         # normalization module
         normalization = Normalization(self.device).to(self.device)
 
-        # just in order to have an iterable access to or list of content/style
-        # losses
         content_losses = []
         style_losses = []
 
-        # assuming that cnn is a nn.Sequential, so we make a new nn.Sequential
-        # to put in modules that are supposed to be activated sequentially
         model = nn.Sequential(normalization)
 
         i = 0  # increment every time we see a conv
@@ -128,14 +127,8 @@ class StyleTransfer:
                 name = 'conv_{}'.format(i)
             elif isinstance(layer, nn.ReLU):
                 name = 'relu_{}'.format(i)
-                # Переопределим relu уровень
-                layer = nn.ReLU(inplace=False)
             elif isinstance(layer, nn.MaxPool2d):
                 name = 'pool_{}'.format(i)
-            elif isinstance(layer, nn.BatchNorm2d):
-                name = 'bn_{}'.format(i)
-            else:
-                raise RuntimeError('Unrecognized layer: {}'.format(layer.__class__.__name__))
 
             model.add_module(name, layer)
 
@@ -150,13 +143,6 @@ class StyleTransfer:
                 style_loss = StyleLoss(target_feature)
                 model.add_module("style_loss_{}".format(i), style_loss)
                 style_losses.append(style_loss)
-
-        # trim off the layers after the last content and style losses
-        for i in range(len(model) - 1, -1, -1):
-            if isinstance(model[i], ContentLoss) or isinstance(model[i], StyleLoss):
-                break
-
-        model = model[:(i + 1)]
 
         return model, style_losses, content_losses
 
@@ -211,13 +197,13 @@ class StyleTransfer:
 def run_nst(style_image, content_image):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    style_processing = ImageProcessing(new_size=128, device=device)
-    content_processing = ImageProcessing(new_size=128, device=device)
+    style_processing = ImageProcessing(new_size=256, device=device)
+    content_processing = ImageProcessing(new_size=256, device=device)
 
     style_img = style_processing.image_loader(style_image)
     content_img = content_processing.image_loader(content_image)
 
-    transfer = StyleTransfer(num_steps=200, device=device)
+    transfer = StyleTransfer(num_steps=400, device=device)
     output = transfer.transfer(style_img, content_img)
     output = content_processing.get_image(output)
 

@@ -12,6 +12,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 BOT_TOKEN = environ.get("BOT_TOKEN")
+# BOT_TOKEN = BOT_API_TOKEN
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -170,8 +171,8 @@ async def echo(message: types.Message):
 
 async def on_startup(dp):
     await bot.set_webhook(WEBHOOK_URL)
-    logging.info(f"Start webhook..\tWEBAPP_HOST-{WEBAPP_HOST}; WEBAPP_PORT-{WEBAPP_PORT};\n"
-                 f"WEBAPP_URL-{WEBHOOK_URL};")
+    # logging.info(f"Start webhook..\tWEBAPP_HOST-{WEBAPP_HOST}; WEBAPP_PORT-{WEBAPP_PORT};\n"
+    #              f"WEBAPP_URL-{WEBHOOK_URL};")
 
 
 async def on_shutdown(dp):
