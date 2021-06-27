@@ -107,7 +107,7 @@ class StyleTransfer:
             nn.MaxPool2d(kernel_size=2, stride=2),
             nn.Conv2d(128, 256, kernel_size=3, padding=1)
         )
-        cnn.load_state_dict(torch.load("models_wts/vgg_features_cpu.pth"))
+        cnn.load_state_dict(torch.load("models_wts/nst_features.pth"))
         cnn = cnn.to(self.device).eval()
 
         normalization = Normalization(self.device).to(self.device)
@@ -192,13 +192,13 @@ class StyleTransfer:
 def run_nst(style_image, content_image):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    style_processing = ImageProcessing(new_size=180, device=device)
-    content_processing = ImageProcessing(new_size=180, device=device)
+    style_processing = ImageProcessing(new_size=200, device=device)
+    content_processing = ImageProcessing(new_size=200, device=device)
 
     style_image = style_processing.image_loader(style_image)
     content_image = content_processing.image_loader(content_image)
 
-    transfer = StyleTransfer(num_steps=300, device=device)
+    transfer = StyleTransfer(num_steps=250, device=device)
     output = transfer.transfer(style_image, content_image)
     output = content_processing.get_image(output)
 

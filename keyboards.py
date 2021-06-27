@@ -7,7 +7,7 @@ def start_keyboard():
         types.InlineKeyboardButton(text="Лето в зиму", callback_data="summer2winter"),
         types.InlineKeyboardButton(text="Зиму в лето", callback_data="winter2summer"),
         types.InlineKeyboardButton(text="\U0001F4A5 Примеры", callback_data="examples"),
-        types.InlineKeyboardButton(text="\U0001F4C3 GitHub", url='github.com')
+        types.InlineKeyboardButton(text="\U0001F4C3 GitHub", url='https://github.com/mayo889/Telegram_Bot_NST_GAN')
     ]
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(*buttons)
