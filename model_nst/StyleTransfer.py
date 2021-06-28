@@ -192,13 +192,13 @@ class StyleTransfer:
 def run_nst(style_image, content_image):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    style_processing = ImageProcessing(new_size=150, device=device)
-    content_processing = ImageProcessing(new_size=150, device=device)
+    style_processing = ImageProcessing(new_size=180, device=device)
+    content_processing = ImageProcessing(new_size=180, device=device)
 
     style_image = style_processing.image_loader(style_image)
     content_image = content_processing.image_loader(content_image)
 
-    transfer = StyleTransfer(num_steps=200, device=device)
+    transfer = StyleTransfer(num_steps=250, device=device)
     output = transfer.transfer(style_image, content_image)
     output = content_processing.get_image(output)
 

@@ -20,4 +20,4 @@ if __name__ == '__main__':
     if opt.eval:
         model.eval()
 
-    torch.save(model, '../summer2winter.pth')
+    torch.save(model, '../models_wts/summer2winter.pth')
