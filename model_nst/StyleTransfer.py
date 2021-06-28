@@ -84,7 +84,7 @@ class Normalization(nn.Module):
 
 
 class StyleTransfer:
-    def __init__(self, num_steps, device, style_weight=100000, content_weight=1):
+    def __init__(self, num_steps, device, style_weight=100000, content_weight=10):
         self.num_steps = num_steps
         self.style_weight = style_weight
         self.content_weight = content_weight

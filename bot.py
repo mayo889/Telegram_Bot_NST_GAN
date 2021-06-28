@@ -59,7 +59,7 @@ async def transfer_style(call: types.CallbackQuery):
     user.restart('nst')
 
     await call.message.answer("Мне нужно 2 фотографии. Давай начнем с фотографии стиля, отправь мне ее.\n"
-                              "Если не знаешь какую, то я могу предложить на выбор свои фоторгафии. "
+                              "Если не знаешь какую, то я могу помочь. "
                               "Для просмотра вариантов нажми на кнопку ниже",
                               reply_markup=kb.style_images())
     await call.answer()
@@ -75,7 +75,7 @@ async def transfer_style(call: types.CallbackQuery):
         else:
             media.attach_photo(types.InputFile(image))
     await call.message.answer_media_group(media)
-    await call.message.answer("Если что-то приглянулось, то выбери фотографию кнопкой, если нет - отправляй собственную"
+    await call.message.answer("Если что-то приглянулось, то выбери стиль кнопкой, если нет - отправляй собственную"
                               " фотографию для стиля", reply_markup=kb.select_style())
     await call.answer()
 
@@ -115,7 +115,7 @@ async def transfer_style(call: types.CallbackQuery):
     media.attach_photo(types.InputFile("images/examples/winter2summer.jpg"), "Зима стала летом")
     await call.message.answer_media_group(media)
 
-    await call.message.answer("Надеюсь, тебе понравились эти примеры и ты захотел попробовать\n\n"
+    await call.message.answer("Надеюсь, тебе понравились эти примеры, и ты захотел попробовать\n\n"
                               "Выбирай алгоритм",
                               reply_markup=kb.algo_keyboard())
     await call.answer()
@@ -149,7 +149,7 @@ async def handle_docs_photo(message: types.Message):
             user.style_img = photo
             await message.answer("Теперь отправь фотографию, на которую перенести стиль")
         else:
-            await message.answer("Процесс тяжелый. Подожди не более 5 минут и я отправлю результат")
+            await message.answer("Процесс тяжелый. Подожди не более 5 минут, и я отправлю результат")
 
             threading.Thread(
                 target=lambda mess, style_img, content_img:
