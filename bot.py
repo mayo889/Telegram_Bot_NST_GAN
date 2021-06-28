@@ -149,7 +149,7 @@ async def handle_docs_photo(message: types.Message):
             user.style_img = photo
             await message.answer("Теперь отправь фотографию, на которую перенести стиль")
         else:
-            await message.answer("Процесс тяжелый. Дай мне 5 минут и я отправлю результат")
+            await message.answer("Процесс тяжелый. Подожди не более 5 минут и я отправлю результат")
 
             threading.Thread(
                 target=lambda mess, style_img, content_img:

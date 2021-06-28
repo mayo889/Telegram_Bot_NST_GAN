@@ -198,7 +198,7 @@ def run_nst(style_image, content_image):
     style_image = style_processing.image_loader(style_image)
     content_image = content_processing.image_loader(content_image)
 
-    transfer = StyleTransfer(num_steps=300, device=device)
+    transfer = StyleTransfer(num_steps=200, device=device)
     output = transfer.transfer(style_image, content_image)
     output = content_processing.get_image(output)
 
