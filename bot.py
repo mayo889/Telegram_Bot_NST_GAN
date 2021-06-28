@@ -16,7 +16,6 @@ BOT_TOKEN = environ.get("BOT_TOKEN")
 logging.basicConfig(level=logging.INFO)
 
 # Initialize bot and dispatcher
-# bot = Bot(token=API_TOKEN, proxy=PROXY_URL, proxy_auth=PROXY_AUTH)
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher(bot)
 db_photos = {}
@@ -40,7 +39,7 @@ class User:
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
     db_photos[message.from_user.id] = User(message.from_user.id)
-    logging.info(f"******New User! Current number of users in dict: {len(db_photos)}******")
+    logging.info(f"New User! Current number of users in dict: {len(db_photos)}")
     await message.answer(kb.start_message, reply_markup=kb.start_keyboard())
 
 
@@ -130,6 +129,7 @@ async def handle_docs_photo(message: types.Message):
     user = db_photos[message.from_user.id]
     if user.type_algo == 'summer2winter':
         await message.answer("Подожди минутку и будет готово!")
+        logging.info(f"Start CycleGAN summer2winter")
 
         threading.Thread(
             target=lambda mess, img, type_algo:
@@ -138,6 +138,7 @@ async def handle_docs_photo(message: types.Message):
 
     elif user.type_algo == 'winter2summer':
         await message.answer("Подожди минутку и будет готово!")
+        logging.info(f"Start CycleGAN winter2summer")
 
         threading.Thread(
             target=lambda mess, img, type_algo:
@@ -150,6 +151,7 @@ async def handle_docs_photo(message: types.Message):
             await message.answer("Теперь отправь фотографию, на которую перенести стиль")
         else:
             await message.answer("Процесс тяжелый. Подожди не более 5 минут, и я отправлю результат")
+            logging.info(f"Start Style Transfer")
 
             threading.Thread(
                 target=lambda mess, style_img, content_img:

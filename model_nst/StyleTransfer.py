@@ -30,7 +30,7 @@ class ImageProcessing:
         image = image.squeeze(0)
         unloader = transforms.ToPILImage()
         image = unloader(image)
-        image = PIL.ImageOps.fit(image, (self.image_size[0], self.image_size[1]))
+        image = PIL.ImageOps.fit(image, self.image_size)
 
         # transform PIL image to send to telegram
         bio = BytesIO()
@@ -84,7 +84,7 @@ class Normalization(nn.Module):
 
 
 class StyleTransfer:
-    def __init__(self, num_steps, device, style_weight=10000, content_weight=1):
+    def __init__(self, num_steps, device, style_weight=100000, content_weight=1):
         self.num_steps = num_steps
         self.style_weight = style_weight
         self.content_weight = content_weight
