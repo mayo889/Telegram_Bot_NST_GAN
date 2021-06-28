@@ -32,7 +32,7 @@ class ImageProcessing:
         image = tensor[0].cpu().clone()
         image = image * 0.5 + 0.5
         image = self.unloader(image)
-        image = PIL.ImageOps.fit(image, (self.image_size[0], self.image_size[1]))
+        image = PIL.ImageOps.fit(image, self.image_size)
 
         return image
 

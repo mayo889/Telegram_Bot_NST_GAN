@@ -8,6 +8,8 @@ import torch.optim as optim
 
 import torchvision.transforms as transforms
 from io import BytesIO
+import logging
+logging.basicConfig(level=logging.INFO)
 
 
 class ImageProcessing:
@@ -179,6 +181,8 @@ class StyleTransfer:
                 loss.backward()
 
                 run[0] += 1
+                if run[0] % 50 == 0:
+                    logging.info(f"run: {run[0]}")
 
                 return style_score + content_score
 
