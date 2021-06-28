@@ -97,17 +97,17 @@ class StyleTransfer:
 
     def get_style_model_and_losses(self, style_img, content_img):
         cnn = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3, padding=1),
+            nn.Conv2d(3, 64, kernel_size=(3, 3), padding=1),
             nn.ReLU(),
-            nn.Conv2d(64, 64, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2),
-            nn.Conv2d(64, 128, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(128, 128, kernel_size=3, padding=1),
+            nn.Conv2d(64, 64, kernel_size=(3, 3), padding=1),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
-            nn.Conv2d(128, 256, kernel_size=3, padding=1)
+            nn.Conv2d(64, 128, kernel_size=(3, 3), padding=1),
+            nn.ReLU(),
+            nn.Conv2d(128, 128, kernel_size=(3, 3), padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.Conv2d(128, 256, kernel_size=(3, 3), padding=1)
         )
         cnn.load_state_dict(torch.load("models_wts/nst_features.pth"))
         cnn = cnn.to(self.device).eval()
@@ -150,7 +150,7 @@ class StyleTransfer:
         optimizer = optim.LBFGS([input_img.requires_grad_()])
         return optimizer
 
-    def transfer(self, style_img, content_img):
+    def transfer_style(self, style_img, content_img):
         input_img = content_img.clone()
         model, style_losses, content_losses = self.get_style_model_and_losses(
             style_img, content_img)
@@ -180,9 +180,9 @@ class StyleTransfer:
                 loss = style_score + content_score
                 loss.backward()
 
-                run[0] += 1
                 if run[0] % 50 == 0:
                     logging.info(f"run: {run[0]}")
+                run[0] += 1
 
                 return style_score + content_score
 
@@ -203,7 +203,7 @@ def run_nst(style_image, content_image):
     content_image = content_processing.image_loader(content_image)
 
     transfer = StyleTransfer(num_steps=200, device=device)
-    output = transfer.transfer(style_image, content_image)
+    output = transfer.transfer_style(style_image, content_image)
     output = content_processing.get_image(output)
 
     return output
